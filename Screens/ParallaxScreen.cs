@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using Game3.Shapes;
 
 namespace Game3.Screens
 {
@@ -26,9 +27,11 @@ namespace Game3.Screens
         /// <summary>
         /// Layer textures
         /// </summary>
-        private Texture2D _foreground;
+        //private Texture2D _foreground;
         private Texture2D _midground;
         private Texture2D _background;
+
+        private IShape[] _foreground = { new Shapes.Line(), new Shapes.Line(), new SemiCircle(), new Shapes.Line() };
 
         public ParallaxScreen()
         {
@@ -43,9 +46,14 @@ namespace Game3.Screens
 
             _ball = new Ball();
             _ball.LoadContent(_content);
-            _foreground = _content.Load<Texture2D>("Foreground");
             _midground = _content.Load<Texture2D>("Midground");
             _background = _content.Load<Texture2D>("Background");
+
+            foreach( IShape s in  _foreground )
+            {
+                s.LoadContent(_content);
+            }
+
             _spriteBatch = new SpriteBatch(ScreenManager.GraphicsDevice);
         }
 
@@ -95,7 +103,13 @@ namespace Game3.Screens
             // Forground
             transform = Matrix.CreateTranslation(offsetX, 0, 0);
             _spriteBatch.Begin(transformMatrix: transform, blendState: blend);
-            _spriteBatch.Draw(_foreground, Vector2.Zero, Color.White);
+            var x = 0;
+            foreach( IShape s in _foreground )
+            {
+                s.Position = new Vector2(x, 128);
+                s.Draw(gameTime, _spriteBatch);
+                x = x + 128;
+            }
             _ball.Draw(gameTime, _spriteBatch);
             _spriteBatch.End();
         }
