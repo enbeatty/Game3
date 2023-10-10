@@ -24,6 +24,14 @@ namespace Game3.Shapes
         /// </summary>
         public BoundingRectangle Bounds => _bounds;
 
+        public Line(Vector2 position)
+        {
+            Position = position;
+            _bounds = new BoundingRectangle(position, 128, 30);
+        }
+
+
+
         /// <summary>
         /// Loads the sprite texture using the provided ContentManager
         /// </summary>

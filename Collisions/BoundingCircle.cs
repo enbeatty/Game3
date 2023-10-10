@@ -47,5 +47,10 @@ namespace Game3.Collisions
         {
             return CollisionHelper.Collides(this, other);
         }
+
+        public bool CollidesWith(BoundingDip other)
+        {
+            return CollisionHelper.Collides(this, other);
+        }
     }
 }

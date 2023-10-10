@@ -23,6 +23,12 @@ namespace Game3.Shapes
         /// </summary>
         public BoundingDip Bounds => _bounds;
 
+        public SemiCircle(Vector2 position)
+        {
+            Position = position;
+            _bounds = new BoundingDip(position + new Vector2(128, 0), 128);
+        }
+
         /// <summary>
         /// Loads the sprite texture using the provided ContentManager
         /// </summary>

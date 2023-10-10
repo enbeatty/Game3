@@ -31,6 +31,11 @@ namespace Game3.Collisions
             return !(a.Right < b.Left || a.Left > b.Right || a.Top > b.Bottom || a.Bottom < b.Top);
         }
 
+        public static bool Collides(BoundingDip a, BoundingDip b)
+        {
+            return Math.Pow(a.Radius + b.Radius, 2) >= Math.Pow(a.Center.X - b.Center.X, 2) + Math.Pow(a.Center.Y - b.Center.Y, 2);
+        }
+
         /// <summary>
         /// Detects a collision between a rectangle and a circle
         /// </summary>
@@ -51,6 +56,17 @@ namespace Game3.Collisions
             float nearestY = MathHelper.Clamp(c.Center.Y, r.Top, r.Bottom);
 
             return Math.Pow(c.Radius, 2) >= Math.Pow(c.Center.X - nearestX, 2) + Math.Pow(c.Center.Y - nearestY, 2);
+        }
+
+        public static bool Collides(BoundingDip d, BoundingCircle c)
+        {
+            return Math.Pow(d.Radius + c.Radius - 32, 2) >= Math.Pow(d.Center.X - c.Center.X, 2) + Math.Pow(d.Center.Y - c.Center.Y, 2);
+            //return Math.Pow(d.Radius + c.Radius, 2) >= Math.Pow(a.Center.X - b.Center.X, 2) + Math.Pow(a.Center.Y - b.Center.Y, 2);
+        }
+
+        public static bool Collides(BoundingCircle c, BoundingDip d)
+        {
+            return Math.Pow(c.Center.Y + 32, 2) <= Math.Pow(d.Center.X, 2) + Math.Pow(d.Radius, 2) - Math.Pow(c.Center.X + 32 - d.Center.Y, 2);
         }
     }
 }

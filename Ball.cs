@@ -10,6 +10,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using SharpDX.Direct3D9;
+using Game3.Shapes;
 
 namespace Game3
 {
@@ -22,6 +23,10 @@ namespace Game3
         private BoundingCircle _bounds = new BoundingCircle(new Vector2(32,32), 32.0f);
 
         private float _rotation;
+
+        public Vector2 Velocity = new Vector2(10,0);
+
+        public Vector2 Acceleration { get; set; }
 
         public Vector2 Position = new Vector2(64, 64);
 
@@ -55,6 +60,9 @@ namespace Game3
 
             float t = (float)gameTime.ElapsedGameTime.TotalSeconds;
 
+            Velocity += Acceleration * t;
+            Position += Velocity * t;
+
             if (_keyboardState.IsKeyDown(Keys.Left))
             {
                 Position -= Vector2.UnitX * 400 * t;
@@ -65,6 +73,18 @@ namespace Game3
                 Position += Vector2.UnitX * 400 * t;
                 _rotation += .1f;
             }
+            if (_keyboardState.IsKeyDown(Keys.Down))
+            {
+                Position += Vector2.UnitY * 400 * t;
+                _rotation += .1f;
+            }
+            if (_keyboardState.IsKeyDown(Keys.Up))
+            {
+                Position -= Vector2.UnitY * 400 * t;
+                _rotation -= .1f;
+            }
+            _bounds.Center.X = Position.X;
+            _bounds.Center.Y = Position.Y;
         }
 
         /// <summary>

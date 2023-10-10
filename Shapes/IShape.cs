@@ -7,11 +7,13 @@ using System.Threading.Tasks;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
+using Game3.Collisions;
 
 namespace Game3.Shapes
 {
     public interface IShape
     {
+
         public Vector2 Position { get; set; }
 
         public void LoadContent(ContentManager content) { }

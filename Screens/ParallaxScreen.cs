@@ -10,13 +10,14 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using Game3.Shapes;
+using SharpDX.Direct2D1;
 
 namespace Game3.Screens
 {
     public class ParallaxScreen : GameScreen
     {
         private ContentManager _content;
-        private SpriteBatch _spriteBatch;
+        private Microsoft.Xna.Framework.Graphics.SpriteBatch _spriteBatch;
 
 
         /// <summary>
@@ -26,12 +27,13 @@ namespace Game3.Screens
 
         /// <summary>
         /// Layer textures
-        /// </summary>
+        /// </summary>\
+        private Texture2D _test;
         //private Texture2D _foreground;
         private Texture2D _midground;
         private Texture2D _background;
 
-        private IShape[] _foreground = { new Shapes.Line(), new Shapes.Line(), new SemiCircle(), new Shapes.Line() };
+        private IShape[] _foreground = { new Shapes.Line(new Vector2(0, 500)), new Shapes.Line(new Vector2(128, 500)), new SemiCircle(new Vector2(256, 500)), new Shapes.Line(new Vector2(512, 500)), new SemiCircle(new Vector2(640, 500)) };
 
         public ParallaxScreen()
         {
@@ -48,13 +50,15 @@ namespace Game3.Screens
             _ball.LoadContent(_content);
             _midground = _content.Load<Texture2D>("Midground");
             _background = _content.Load<Texture2D>("Background");
+            _test = _content.Load<Texture2D>("ball");
 
-            foreach( IShape s in  _foreground )
+
+            foreach ( IShape s in  _foreground )
             {
                 s.LoadContent(_content);
             }
 
-            _spriteBatch = new SpriteBatch(ScreenManager.GraphicsDevice);
+            _spriteBatch = new Microsoft.Xna.Framework.Graphics.SpriteBatch(ScreenManager.GraphicsDevice);
         }
 
         public override void Deactivate()
@@ -70,6 +74,33 @@ namespace Game3.Screens
         public override void Update(GameTime gameTime, bool otherScreenHasFocus, bool coveredByOtherScreen)
         {
             base.Update(gameTime, otherScreenHasFocus, false);
+
+            _ball.Acceleration = new Vector2(0, 30f);
+            foreach( IShape s in _foreground )
+            {
+                if( s is SemiCircle )
+                {
+                    SemiCircle c = (SemiCircle)s;
+
+                    if(_ball.Bounds.CollidesWith(c.Bounds))
+                    {
+                        _ball.Acceleration = new Vector2(0, 0);
+                        _ball.Position -= (_ball.Velocity * (float)gameTime.ElapsedGameTime.TotalSeconds);
+                        _ball.Velocity = new Vector2(0, 0);
+                    }
+                }
+                if( s is Line )
+                {
+                    Line l = (Line)s;
+
+                    if (_ball.Bounds.CollidesWith(l.Bounds))
+                    {
+                        _ball.Acceleration = new Vector2(0, 0);
+                        _ball.Position -= (_ball.Velocity * (float)gameTime.ElapsedGameTime.TotalSeconds);
+                        _ball.Velocity = new Vector2(0, 0);
+                    }
+                }
+            }
 
             _ball.Color = Color.White; //This is where the color of the ball can change
             _ball.Update(gameTime);
@@ -103,14 +134,31 @@ namespace Game3.Screens
             // Forground
             transform = Matrix.CreateTranslation(offsetX, 0, 0);
             _spriteBatch.Begin(transformMatrix: transform, blendState: blend);
-            var x = 0;
             foreach( IShape s in _foreground )
             {
-                s.Position = new Vector2(x, 128);
                 s.Draw(gameTime, _spriteBatch);
-                x = x + 128;
+                if( s is SemiCircle )
+                {
+                    SemiCircle c = (SemiCircle)s;
+                    var rectb = new Rectangle((int)(c.Bounds.Center.X - c.Bounds.Radius),
+                                         (int)(c.Bounds.Center.Y - c.Bounds.Radius),
+                                         (int)(2 * c.Bounds.Radius), (int)(2 * c.Bounds.Radius));
+                    _spriteBatch.Draw(_test, rectb, Color.Red);
+                }
+                if( s is Line )
+                {
+                    Line l = (Line)s;
+                    var rect = new Rectangle((int)l.Bounds.X, (int)l.Bounds.Y, (int)l.Bounds.Width, (int)l.Bounds.Height);
+                    _spriteBatch.Draw(_background, rect, Color.Black);
+                }
+                
+                
             }
             _ball.Draw(gameTime, _spriteBatch);
+            var recta = new Rectangle((int)(_ball.Bounds.Center.X - _ball.Bounds.Radius),
+                                         (int)(_ball.Bounds.Center.Y - _ball.Bounds.Radius),
+                                         (int)(2 * _ball.Bounds.Radius), (int)(2 * _ball.Bounds.Radius));
+            _spriteBatch.Draw(_test, recta, Color.Red);
             _spriteBatch.End();
         }
     }
