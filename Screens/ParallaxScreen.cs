@@ -137,7 +137,7 @@ namespace Game3.Screens
             foreach( IShape s in _foreground )
             {
                 s.Draw(gameTime, _spriteBatch);
-                if( s is SemiCircle )
+                /*if( s is SemiCircle )
                 {
                     SemiCircle c = (SemiCircle)s;
                     var rectb = new Rectangle((int)(c.Bounds.Center.X - c.Bounds.Radius),
@@ -150,15 +150,15 @@ namespace Game3.Screens
                     Line l = (Line)s;
                     var rect = new Rectangle((int)l.Bounds.X, (int)l.Bounds.Y, (int)l.Bounds.Width, (int)l.Bounds.Height);
                     _spriteBatch.Draw(_background, rect, Color.Black);
-                }
+                }*/
                 
                 
             }
             _ball.Draw(gameTime, _spriteBatch);
-            var recta = new Rectangle((int)(_ball.Bounds.Center.X - _ball.Bounds.Radius),
+            /*var recta = new Rectangle((int)(_ball.Bounds.Center.X - _ball.Bounds.Radius),
                                          (int)(_ball.Bounds.Center.Y - _ball.Bounds.Radius),
                                          (int)(2 * _ball.Bounds.Radius), (int)(2 * _ball.Bounds.Radius));
-            _spriteBatch.Draw(_test, recta, Color.Red);
+            _spriteBatch.Draw(_test, recta, Color.Red);*/
             _spriteBatch.End();
         }
     }
