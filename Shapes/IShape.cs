@@ -16,6 +16,10 @@ namespace Game3.Shapes
 
         public Vector2 Position { get; set; }
 
+        public float LeftBound { get; }
+
+        public float RightBound { get; }  
+
         public void LoadContent(ContentManager content) { }
         public void Draw(GameTime gameTime, SpriteBatch spriteBatch) { }
     }

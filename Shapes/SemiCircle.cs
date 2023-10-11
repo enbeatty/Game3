@@ -16,6 +16,10 @@ namespace Game3.Shapes
 
         private Texture2D _semiCircle;
 
+        public float LeftBound => Position.X;
+
+        public float RightBound => Position.X + 256;
+
         public Vector2 Position { get; set; }
 
         /// <summary>

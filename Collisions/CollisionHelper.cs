@@ -60,7 +60,8 @@ namespace Game3.Collisions
 
         public static bool Collides(BoundingDip d, BoundingCircle c)
         {
-            return Math.Pow(d.Radius + c.Radius - 32, 2) >= Math.Pow(d.Center.X - c.Center.X, 2) + Math.Pow(d.Center.Y - c.Center.Y, 2);
+            return false;
+            //return Math.Pow(d.Radius + c.Radius - 32, 2) >= Math.Pow(d.Center.X - c.Center.X, 2) + Math.Pow(d.Center.Y - c.Center.Y, 2);
             //return Math.Pow(d.Radius + c.Radius, 2) >= Math.Pow(a.Center.X - b.Center.X, 2) + Math.Pow(a.Center.Y - b.Center.Y, 2);
         }
 

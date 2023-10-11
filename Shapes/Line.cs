@@ -17,6 +17,8 @@ namespace Game3.Shapes
 
         private Texture2D _line;
 
+        public float LeftBound => Position.X;
+        public float RightBound => Position.X + 128;
         public Vector2 Position { get; set; }
 
         /// <summary>

@@ -78,18 +78,32 @@ namespace Game3.Screens
             _ball.Acceleration = new Vector2(0, 30f);
             foreach( IShape s in _foreground )
             {
-                if( s is SemiCircle )
+                if( !(_ball.Position.X < s.LeftBound|| _ball.Position.X > s.RightBound))
                 {
-                    SemiCircle c = (SemiCircle)s;
-
-                    if(_ball.Bounds.CollidesWith(c.Bounds))
+                    if (s is SemiCircle)
                     {
-                        _ball.Acceleration = new Vector2(0, 0);
-                        _ball.Position -= (_ball.Velocity * (float)gameTime.ElapsedGameTime.TotalSeconds);
-                        _ball.Velocity = new Vector2(0, 0);
+                        _ball.Position.Y = (s.Position.Y) + (float)Math.Sqrt( 16384f - (float)Math.Pow(_ball.Position.X - (s.Position.X + 128), 2));
+                        _ball.Position.Y -= 48;
+                        break;
+                        SemiCircle c = (SemiCircle)s;
+
+                        if (_ball.Bounds.CollidesWith(c.Bounds))
+                        {
+                            _ball.Acceleration = new Vector2(0, 0);
+                            _ball.Position -= (_ball.Velocity * (float)gameTime.ElapsedGameTime.TotalSeconds);
+                            _ball.Velocity = new Vector2(0, 0);
+                        }
+                    }
+                    if( s is Line )
+                    {
+                        _ball.Position.Y = s.Position.Y - 32;
+                        break;
                     }
                 }
-                if( s is Line )
+
+
+                
+                /*if( s is Line )
                 {
                     Line l = (Line)s;
 
@@ -99,7 +113,7 @@ namespace Game3.Screens
                         _ball.Position -= (_ball.Velocity * (float)gameTime.ElapsedGameTime.TotalSeconds);
                         _ball.Velocity = new Vector2(0, 0);
                     }
-                }
+                }*/
             }
 
             _ball.Color = Color.White; //This is where the color of the ball can change
