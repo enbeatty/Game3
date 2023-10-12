@@ -20,11 +20,11 @@ namespace Game3
 
         private Texture2D _ball;
 
-        private BoundingCircle _bounds = new BoundingCircle(new Vector2(32,32), 32.0f);
+        private BoundingCircle _bounds = new BoundingCircle(new Vector2(Constants.BALL_RADIUS, Constants.BALL_RADIUS), 32.0f);
 
         private float _rotation;
 
-        public Vector2 Velocity = new Vector2(10,0);
+        public Vector2 Velocity = new Vector2(50,0);
 
         public Vector2 Acceleration { get; set; }
 
@@ -63,22 +63,17 @@ namespace Game3
             Velocity += Acceleration * t;
             Position += Velocity * t;
 
-            if (_keyboardState.IsKeyDown(Keys.Left))
+            if (_keyboardState.IsKeyDown(Keys.Left) || _keyboardState.IsKeyDown(Keys.A))
             {
                 Position -= Vector2.UnitX * 400 * t;
                 _rotation -= .1f;
             }
-            if (_keyboardState.IsKeyDown(Keys.Right))
+            if (_keyboardState.IsKeyDown(Keys.Right) || _keyboardState.IsKeyDown(Keys.D))
             {
                 Position += Vector2.UnitX * 400 * t;
                 _rotation += .1f;
             }
-            if (_keyboardState.IsKeyDown(Keys.Down))
-            {
-                Position += Vector2.UnitY * 400 * t;
-                _rotation += .1f;
-            }
-            if (_keyboardState.IsKeyDown(Keys.Up))
+            if (_keyboardState.IsKeyDown(Keys.Up) || _keyboardState.IsKeyDown(Keys.W))
             {
                 Position -= Vector2.UnitY * 400 * t;
                 _rotation -= .1f;
@@ -94,7 +89,7 @@ namespace Game3
         /// <param name="spriteBatch">The spritebatch to render with</param>
         public void Draw(GameTime gameTime, SpriteBatch spriteBatch)
         {
-            spriteBatch.Draw(_ball, Position, null, Color, _rotation, new Vector2(32, 32), 1f, SpriteEffects.None, 0);
+            spriteBatch.Draw(_ball, Position, null, Color, _rotation, new Vector2(Constants.BALL_RADIUS, Constants.BALL_RADIUS), 1f, SpriteEffects.None, 0);
         }
     }
 }

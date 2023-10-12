@@ -18,7 +18,7 @@ namespace Game3.Shapes
         private Texture2D _line;
 
         public float LeftBound => Position.X;
-        public float RightBound => Position.X + 128;
+        public float RightBound => Position.X + Constants.LINE_WIDTH;
         public Vector2 Position { get; set; }
 
         /// <summary>
@@ -29,7 +29,7 @@ namespace Game3.Shapes
         public Line(Vector2 position)
         {
             Position = position;
-            _bounds = new BoundingRectangle(position, 128, 30);
+            _bounds = new BoundingRectangle(position, Constants.LINE_WIDTH, 30);
         }
 
 

@@ -11,6 +11,7 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using Game3.Shapes;
 using SharpDX.Direct2D1;
+using Microsoft.Xna.Framework.Media;
 
 namespace Game3.Screens
 {
@@ -18,7 +19,12 @@ namespace Game3.Screens
     {
         private ContentManager _content;
         private Microsoft.Xna.Framework.Graphics.SpriteBatch _spriteBatch;
+        private Random _random = new Random();
 
+        /// <summary>
+        /// Sound
+        /// </summary>
+        private Song _backgroundMusic;
 
         /// <summary>
         /// Characters
@@ -27,18 +33,28 @@ namespace Game3.Screens
 
         /// <summary>
         /// Layer textures
-        /// </summary>\
-        private Texture2D _test;
-        //private Texture2D _foreground;
+        /// </summary>
         private Texture2D _midground;
         private Texture2D _background;
 
-        private IShape[] _foreground = { new Shapes.Line(new Vector2(0, 500)), new Shapes.Line(new Vector2(128, 500)), new SemiCircle(new Vector2(256, 500)), new Shapes.Line(new Vector2(512, 500)), new SemiCircle(new Vector2(640, 500)) };
+
+        private IShape[] _foreground = new IShape[Constants.PLATFORMS]; 
+
+        private Spiral[] _spirals =
+        {
+            new Spiral(new Vector2(Constants.LINE_WIDTH, Constants.BOTTOM_HEIGHT - 32), Color.Magenta),
+            new Spiral(new Vector2(Constants.LINE_WIDTH*3 + Constants.SEMICIRCLE_DIAMETER*2 + 64, Constants.BOTTOM_HEIGHT - 32), Color.AntiqueWhite),
+            new Spiral(new Vector2(Constants.LINE_WIDTH*5 + Constants.SEMICIRCLE_DIAMETER*2, Constants.BOTTOM_HEIGHT - 32), Color.CadetBlue),
+            new Spiral(new Vector2(Constants.LINE_WIDTH*6 + Constants.SEMICIRCLE_DIAMETER*4 + 64, Constants.BOTTOM_HEIGHT - 32), Color.White)
+        };
+        private int _spiralCount = 4;
+        private int _spiralLeft = 4;
 
         public ParallaxScreen()
         {
             TransitionOnTime = TimeSpan.FromSeconds(1.5);
             TransitionOffTime = TimeSpan.FromSeconds(0.5);
+            
         }
 
         public override void Activate()
@@ -50,15 +66,39 @@ namespace Game3.Screens
             _ball.LoadContent(_content);
             _midground = _content.Load<Texture2D>("Midground");
             _background = _content.Load<Texture2D>("Background");
-            _test = _content.Load<Texture2D>("ball");
+
+            int lineCount = 0;
+            int circleCount = 0;
+            for (int i = 0; i < Constants.PLATFORMS; i++)
+            {
+                long r = _random.NextInt64(0, 3);
+                if (r == 2)
+                {
+                    _foreground[i] = (new SemiCircle(new Vector2(Constants.LINE_WIDTH * lineCount + Constants.SEMICIRCLE_DIAMETER * circleCount, Constants.BOTTOM_HEIGHT)));
+                    circleCount++;
+                }
+                else
+                {
+                    _foreground[i] = (new Line(new Vector2(Constants.LINE_WIDTH * lineCount + Constants.SEMICIRCLE_DIAMETER * circleCount, Constants.BOTTOM_HEIGHT)));
+                    lineCount++;
+                }
+            }
 
 
             foreach ( IShape s in  _foreground )
             {
                 s.LoadContent(_content);
             }
-
+            foreach( Spiral s in _spirals )
+            {
+                s.LoadContent(_content);
+            }
             _spriteBatch = new Microsoft.Xna.Framework.Graphics.SpriteBatch(ScreenManager.GraphicsDevice);
+
+            _backgroundMusic = _content.Load<Song>("GameSongTwo");
+            MediaPlayer.IsRepeating = true;
+            MediaPlayer.Volume = 0.3f;
+            MediaPlayer.Play(_backgroundMusic);
         }
 
         public override void Deactivate()
@@ -75,48 +115,58 @@ namespace Game3.Screens
         {
             base.Update(gameTime, otherScreenHasFocus, false);
 
-            _ball.Acceleration = new Vector2(0, 30f);
+            _ball.Acceleration = new Vector2(0, 800f);
             foreach( IShape s in _foreground )
             {
                 if( !(_ball.Position.X < s.LeftBound|| _ball.Position.X > s.RightBound))
                 {
                     if (s is SemiCircle)
                     {
-                        _ball.Position.Y = (s.Position.Y) + (float)Math.Sqrt( 16384f - (float)Math.Pow(_ball.Position.X - (s.Position.X + 128), 2));
-                        _ball.Position.Y -= 48;
-                        break;
                         SemiCircle c = (SemiCircle)s;
 
                         if (_ball.Bounds.CollidesWith(c.Bounds))
                         {
+                            float arch = (s.Position.Y) + (float)Math.Sqrt(65536f - (float)Math.Pow(_ball.Position.X - (s.Position.X + Constants.SEMICIRCLE_RADIUS), 2));
                             _ball.Acceleration = new Vector2(0, 0);
-                            _ball.Position -= (_ball.Velocity * (float)gameTime.ElapsedGameTime.TotalSeconds);
+                            if( _ball.Position.Y + 32 > arch)
+                            {
+                                _ball.Position.Y = arch - 32;
+                            }
+                            else
+                            {
+                                _ball.Position -= (_ball.Velocity * (float)gameTime.ElapsedGameTime.TotalSeconds);
+                            }
                             _ball.Velocity = new Vector2(0, 0);
                         }
+
+                        break;
                     }
                     if( s is Line )
                     {
-                        _ball.Position.Y = s.Position.Y - 32;
+                        //_ball.Position.Y = s.Position.Y - 32;
+                        Line l = (Line)s;
+
+                        if (_ball.Position.Y >= Constants.BOTTOM_HEIGHT - 32)
+                        {
+                            _ball.Acceleration = new Vector2(0, 0);
+                            _ball.Position.Y = s.Position.Y - 32;
+                            _ball.Velocity = new Vector2(0, 0);
+                        }
                         break;
                     }
                 }
-
-
-                
-                /*if( s is Line )
-                {
-                    Line l = (Line)s;
-
-                    if (_ball.Bounds.CollidesWith(l.Bounds))
-                    {
-                        _ball.Acceleration = new Vector2(0, 0);
-                        _ball.Position -= (_ball.Velocity * (float)gameTime.ElapsedGameTime.TotalSeconds);
-                        _ball.Velocity = new Vector2(0, 0);
-                    }
-                }*/
             }
 
-            _ball.Color = Color.White; //This is where the color of the ball can change
+            foreach (Spiral s in _spirals)
+            {
+                s.Update(gameTime);
+                if (!s.Collected && _ball.Bounds.CollidesWith(s.Bounds))
+                {
+                    _spiralLeft--;
+                    s.Collected = true;
+                    _ball.Color = s.Color;
+                }
+            }
             _ball.Update(gameTime);
 
         }
@@ -126,21 +176,21 @@ namespace Game3.Screens
             base.Draw(gameTime);
 
             //Calculate our offset vector
-            float playerX = MathHelper.Clamp(_ball.Position.X, 300, 13600);
-            float offsetX = 300 - playerX;
+            float playerX = MathHelper.Clamp(_ball.Position.X, 500, 11000);
+            float offsetX = 500 - playerX;
 
             Matrix transform;
             BlendState blend;
 
             // Background
-            transform = Matrix.CreateTranslation(offsetX * 0.333f, 0, 0);
+            transform = Matrix.CreateTranslation(offsetX * 0.222f, 0, 0);
             blend = BlendState.AlphaBlend;
             _spriteBatch.Begin(transformMatrix: transform, blendState: blend);
             _spriteBatch.Draw(_background, Vector2.Zero, Color.White);
             _spriteBatch.End();
 
             // Midground
-            transform = Matrix.CreateTranslation(offsetX * 0.666f, 0, 0);
+            transform = Matrix.CreateTranslation(offsetX * 0.555f, 0, 0);
             _spriteBatch.Begin(transformMatrix: transform, blendState: blend);
             _spriteBatch.Draw(_midground, Vector2.Zero, Color.White);
             _spriteBatch.End();
@@ -168,6 +218,12 @@ namespace Game3.Screens
                 
                 
             }
+
+            foreach( Spiral s in _spirals )
+            {
+                s.Draw(gameTime, _spriteBatch);
+            }
+
             _ball.Draw(gameTime, _spriteBatch);
             /*var recta = new Rectangle((int)(_ball.Bounds.Center.X - _ball.Bounds.Radius),
                                          (int)(_ball.Bounds.Center.Y - _ball.Bounds.Radius),

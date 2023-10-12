@@ -60,14 +60,16 @@ namespace Game3.Collisions
 
         public static bool Collides(BoundingDip d, BoundingCircle c)
         {
-            return false;
+            return c.Center.Y >= (d.Center.Y) + (float)Math.Sqrt(65536f - (float)Math.Pow(c.Center.X - (d.Center.X + 128), 2));
             //return Math.Pow(d.Radius + c.Radius - 32, 2) >= Math.Pow(d.Center.X - c.Center.X, 2) + Math.Pow(d.Center.Y - c.Center.Y, 2);
             //return Math.Pow(d.Radius + c.Radius, 2) >= Math.Pow(a.Center.X - b.Center.X, 2) + Math.Pow(a.Center.Y - b.Center.Y, 2);
         }
 
         public static bool Collides(BoundingCircle c, BoundingDip d)
         {
-            return Math.Pow(c.Center.Y + 32, 2) <= Math.Pow(d.Center.X, 2) + Math.Pow(d.Radius, 2) - Math.Pow(c.Center.X + 32 - d.Center.Y, 2);
+            double part = 16384 - Math.Pow(c.Center.X - (d.Center.X), 2);
+            var test = (d.Center.Y) + (float)Math.Sqrt(part);
+            return c.Center.Y + 32 >= (d.Center.Y) + (float)Math.Sqrt(65536f - (float)Math.Pow(c.Center.X - (d.Center.X), 2));
         }
     }
 }
