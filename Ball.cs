@@ -24,6 +24,11 @@ namespace Game3
 
         private float _rotation;
 
+        /// <summary>
+        /// If false then left was last 
+        /// </summary>
+        private bool _lastRotation;
+
         public Vector2 Velocity = new Vector2(50,0);
 
         public Vector2 Acceleration { get; set; }
@@ -67,16 +72,26 @@ namespace Game3
             {
                 Position -= Vector2.UnitX * 400 * t;
                 _rotation -= .1f;
+                _lastRotation = false;
             }
             if (_keyboardState.IsKeyDown(Keys.Right) || _keyboardState.IsKeyDown(Keys.D))
             {
                 Position += Vector2.UnitX * 400 * t;
                 _rotation += .1f;
+                _lastRotation = true;
             }
             if (_keyboardState.IsKeyDown(Keys.Up) || _keyboardState.IsKeyDown(Keys.W))
             {
                 Position -= Vector2.UnitY * 400 * t;
-                _rotation -= .1f;
+                if(_lastRotation)
+                {
+                    _rotation += .1f;
+                }
+                else
+                {
+                    _rotation -= .1f;
+                }
+                
             }
             _bounds.Center.X = Position.X;
             _bounds.Center.Y = Position.Y;
