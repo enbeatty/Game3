@@ -27,5 +27,7 @@ namespace Game3
         public static int BOTTOM_HEIGHT = 450;
 
         public static int PLATFORMS = 40;
+
+        public static int SPIRALS = 15;
     }
 }

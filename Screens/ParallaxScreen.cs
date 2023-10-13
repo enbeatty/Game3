@@ -40,13 +40,8 @@ namespace Game3.Screens
 
         private IShape[] _foreground = new IShape[Constants.PLATFORMS]; 
 
-        private Spiral[] _spirals =
-        {
-            new Spiral(new Vector2(Constants.LINE_WIDTH, Constants.BOTTOM_HEIGHT - 32), Color.Magenta),
-            new Spiral(new Vector2(Constants.LINE_WIDTH*3 + Constants.SEMICIRCLE_DIAMETER*2 + 64, Constants.BOTTOM_HEIGHT - 32), Color.AntiqueWhite),
-            new Spiral(new Vector2(Constants.LINE_WIDTH*5 + Constants.SEMICIRCLE_DIAMETER*2, Constants.BOTTOM_HEIGHT - 32), Color.CadetBlue),
-            new Spiral(new Vector2(Constants.LINE_WIDTH*6 + Constants.SEMICIRCLE_DIAMETER*4 + 64, Constants.BOTTOM_HEIGHT - 32), Color.White)
-        };
+        private List<Spiral> _spirals = new List<Spiral>();
+
         private int _spiralCount = 4;
         private int _spiralLeft = 4;
 
@@ -69,6 +64,7 @@ namespace Game3.Screens
 
             int lineCount = 0;
             int circleCount = 0;
+
             for (int i = 0; i < Constants.PLATFORMS; i++)
             {
                 long r = _random.NextInt64(0, 3);
@@ -77,13 +73,19 @@ namespace Game3.Screens
                     _foreground[i] = (new SemiCircle(new Vector2(Constants.LINE_WIDTH * lineCount + Constants.SEMICIRCLE_DIAMETER * circleCount, Constants.BOTTOM_HEIGHT)));
                     circleCount++;
                 }
+                else if (r == 1)
+                {
+                    Color color = new Color((int)_random.NextInt64(0, 255), (int)_random.NextInt64(0, 255), (int)_random.NextInt64(0, 255));
+                    _foreground[i] = new Line(new Vector2(Constants.LINE_WIDTH * lineCount + Constants.SEMICIRCLE_DIAMETER * circleCount, Constants.BOTTOM_HEIGHT));
+                    _spirals.Add(new Spiral(new Vector2(Constants.LINE_WIDTH / 2 + (Constants.LINE_WIDTH * lineCount + Constants.SEMICIRCLE_DIAMETER * circleCount), Constants.BOTTOM_HEIGHT - 16), color ));
+                    lineCount++;
+                }
                 else
                 {
-                    _foreground[i] = (new Line(new Vector2(Constants.LINE_WIDTH * lineCount + Constants.SEMICIRCLE_DIAMETER * circleCount, Constants.BOTTOM_HEIGHT)));
+                    _foreground[i] = new Line(new Vector2(Constants.LINE_WIDTH * lineCount + Constants.SEMICIRCLE_DIAMETER * circleCount, Constants.BOTTOM_HEIGHT));
                     lineCount++;
                 }
             }
-
 
             foreach ( IShape s in  _foreground )
             {
